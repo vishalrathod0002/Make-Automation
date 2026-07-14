@@ -1,0 +1,590 @@
+{
+    "name": "HR Automation",
+    "flow": [
+        {
+            "id": 14,
+            "module": "google-sheets:filterRows",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": 8883919
+            },
+            "mapper": {
+                "from": "drive",
+                "limit": "2000",
+                "filter": [
+                    [
+                        {
+                            "a": "G",
+                            "b": "Active",
+                            "o": "text:equal"
+                        }
+                    ]
+                ],
+                "sheetId": "Sheet1",
+                "sortOrder": "asc",
+                "spreadsheetId": "1JWpg28FxfiwszUV3D0M0LYJc51mwY06mhvPdeqKFBAE",
+                "tableFirstRow": "A1:CZ1",
+                "includesHeaders": true,
+                "valueRenderOption": "FORMATTED_VALUE",
+                "dateTimeRenderOption": "FORMATTED_STRING"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "id": 5,
+            "module": "google-drive:getAFile",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 8926718
+            },
+            "filter": {
+                "name": "Only Today's Birthdays",
+                "conditions": [
+                    [
+                        {
+                            "a": "{{formatDate(parseDate(14.`2`; \"YYYY-MM-DD\"); \"MM-DD\")}}",
+                            "b": "{{formatDate(now; \"MM-DD\")}}",
+                            "o": "text:equal"
+                        }
+                    ]
+                ]
+            },
+            "mapper": {
+                "file": "{{14.`4`}}",
+                "select": "map",
+                "formatDrawings": "image/jpeg",
+                "formatDocuments": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "formatSpreadsheets": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "formatPresentations": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "id": 41,
+            "module": "http:ActionSendData",
+            "version": 3,
+            "parameters": {
+                "handleErrors": false,
+                "useNewZLibDeCompress": true
+            },
+            "mapper": {
+                "ca": "",
+                "qs": [],
+                "url": "https://api.groq.com/openai/v1/chat/completions",
+                "data": "{\"model\": \"llama-3.3-70b-versatile\", \"messages\": [{\"role\": \"user\", \"content\": \"You write short, warm birthday messages for a company email. Keep it 3-4 sentences. Mention the employee's department once. Use 1-2 emojis, not in the first sentence. End with a short well-wish. Do not include 'Dear', 'Regards', or a signature. Return only the message text.\\n\\nEmployee name: {{14.`0`}}\\nDepartment: {{14.`3`}}\"}]}",
+                "gzip": true,
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer YOUR_GROQ_API_KEY"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "timeout": "",
+                "useMtls": false,
+                "authPass": "",
+                "authUser": "",
+                "bodyType": "raw",
+                "serializeUrl": false,
+                "shareCookies": false,
+                "parseResponse": true,
+                "followRedirect": true,
+                "useQuerystring": false,
+                "followAllRedirects": false,
+                "rejectUnauthorized": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                },
+                "restore": {}
+            }
+        },
+        {
+            "id": 10,
+            "module": "google-email:ActionSendEmail",
+            "version": 1,
+            "parameters": {
+                "account": 8969790
+            },
+            "mapper": {
+                "cc": [],
+                "to": "{{14.`1`}}",
+                "bcc": [],
+                "from": "",
+                "html": "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta charset=\"utf-8\">\r\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n</head>\r\n<body style=\"margin:0; padding:0; background-color:#0a0a0f; font-family:'Segoe UI', Helvetica, Arial, sans-serif;\">\r\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:radial-gradient(ellipse at top, #1a1230 0%, #0a0a0f 60%); padding:40px 0;\">\r\n    <tr>\r\n      <td align=\"center\">\r\n        <table role=\"presentation\" width=\"560\" cellpadding=\"0\" cellspacing=\"0\"\r\n               style=\"background:linear-gradient(160deg,#1c1730 0%,#120e1f 55%,#0d0a17 100%);\r\n                      border-radius:24px; overflow:hidden;\r\n                      border:1px solid #7a5cff;\r\n                      box-shadow:0 0 0 1px rgba(122,92,255,0.15), 0 20px 60px rgba(122,92,255,0.25), 0 0 90px rgba(255,111,145,0.15);\">\r\n\r\n          <!-- ribbon banner top -->\r\n          <tr>\r\n            <td style=\"background:linear-gradient(90deg,#ff6f91 0%,#ff9a5a 25%,#ffd45a 50%,#7a5cff 75%,#5ad1ff 100%); padding:6px 0; text-align:center;\">\r\n              <span style=\"font-family:Arial, sans-serif; font-size:11px; letter-spacing:4px; color:#0a0a0f; font-weight:700; text-transform:uppercase;\">\r\n                &#10024; A Special Day &#10024;\r\n              </span>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- confetti strip -->\r\n          <tr>\r\n            <td style=\"padding:22px 0 0 0; text-align:center; font-size:16px; letter-spacing:8px;\">\r\n              &#127882;&#8203; &#127881;&#8203; &#10024;&#8203; &#127880;&#8203; &#127882;&#8203; &#10024;&#8203; &#127881;\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- header -->\r\n          <tr>\r\n            <td style=\"padding:16px 0 4px 0; text-align:center;\">\r\n              <span style=\"font-family:Georgia,'Times New Roman',serif; font-size:44px; font-weight:bold;\r\n                           color:#ffd45a; text-shadow:0 0 30px rgba(255,154,90,0.45);\">\r\n                Happy Birthday!\r\n              </span>\r\n            </td>\r\n          </tr>\r\n          <tr>\r\n            <td style=\"text-align:center; padding-bottom:4px;\">\r\n              <span style=\"display:inline-block; width:100px; height:2px; background:linear-gradient(90deg,transparent,#ff9a5a,transparent);\"></span>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- balloons row -->\r\n          <tr>\r\n            <td align=\"center\" style=\"padding:14px 0 4px 0;\">\r\n              <table cellpadding=\"0\" cellspacing=\"0\">\r\n                <tr>\r\n                  <td style=\"font-size:30px; padding:0 8px;\">&#127880;</td>\r\n                  <td style=\"font-size:40px; padding:0 8px;\">&#127881;</td>\r\n                  <td style=\"font-size:50px; padding:0 10px;\">&#127882;</td>\r\n                  <td style=\"font-size:40px; padding:0 8px;\">&#127883;</td>\r\n                  <td style=\"font-size:30px; padding:0 8px;\">&#127880;</td>\r\n                </tr>\r\n              </table>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- PHOTO FRAME (glow + gradient ring) -->\r\n          <tr>\r\n            <td align=\"center\" style=\"padding:28px 0 4px 0;\">\r\n              <table cellpadding=\"0\" cellspacing=\"0\"\r\n                     style=\"background:linear-gradient(135deg,#ff9a5a 0%,#ff6f91 30%,#7a5cff 65%,#5ad1ff 100%);\r\n                            border-radius:22px; padding:7px;\r\n                            box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 10px 35px rgba(122,92,255,0.4), 0 0 70px rgba(255,111,145,0.35);\">\r\n                <tr>\r\n                  <td style=\"background-color:#120e1f; border-radius:18px; padding:8px;\">\r\n                    <table cellpadding=\"0\" cellspacing=\"0\" style=\"border-radius:14px; border:2px solid rgba(255,212,90,0.8);\">\r\n                      <tr>\r\n                        <td style=\"border-radius:14px; overflow:hidden; line-height:0;\">\r\n                          <img src=\"cid:employee_photo\" width=\"230\" height=\"230\"\r\n                               style=\"display:block; border-radius:12px; object-fit:cover;\"\r\n                               alt=\"{{14.`0`}}\" />\r\n                        </td>\r\n                      </tr>\r\n                    </table>\r\n                  </td>\r\n                </tr>\r\n              </table>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- sparkle accents under frame -->\r\n          <tr>\r\n            <td align=\"center\" style=\"padding:10px 0 0 0; font-size:16px; letter-spacing:10px;\">\r\n              <span style=\"color:#ffd45a;\">&#10022;</span>\r\n              <span style=\"color:#ff6f91;\">&#10022;</span>\r\n              <span style=\"color:#5ad1ff;\">&#10022;</span>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- name (this is the employee's name, kept short) -->\r\n          <tr>\r\n            <td align=\"center\" style=\"padding-top:18px;\">\r\n              <span style=\"font-family:Georgia,'Times New Roman',serif; font-size:32px; font-weight:bold;\r\n                           color:#ffe9b0; text-shadow:0 0 20px rgba(255,212,90,0.3);\">\r\n                {{14.`0`}}\r\n              </span>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- department badge -->\r\n          <tr>\r\n            <td align=\"center\" style=\"padding-top:6px; padding-bottom:4px;\">\r\n              <table cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:rgba(122,92,255,0.15); border:1px solid rgba(122,92,255,0.4); border-radius:20px;\">\r\n                <tr>\r\n                  <td style=\"padding:5px 18px;\">\r\n                    <span style=\"font-family:Arial, sans-serif; font-size:12px; letter-spacing:1.5px; color:#c9bfff; text-transform:uppercase;\">\r\n                      {{14.`3`}}\r\n                    </span>\r\n                  </td>\r\n                </tr>\r\n              </table>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- message card: small readable text, with fallback -->\r\n          <tr>\r\n            <td style=\"padding:26px 36px 8px 36px;\">\r\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\r\n                     style=\"background:linear-gradient(135deg,rgba(255,111,145,0.08),rgba(122,92,255,0.08));\r\n                            border-radius:14px; border:1px solid rgba(255,212,90,0.25);\">\r\n                <tr>\r\n                  <td style=\"padding:20px 24px;\">\r\n                    <span style=\"font-family:Arial, sans-serif; font-size:14px; color:#ede9f7; line-height:1.7;\">\r\n                      {{ifempty(41.choices[1].message.content; \"Wishing you a fantastic birthday filled with joy, laughter, and everything that makes you happy. May the year ahead bring you great success and unforgettable memories. Have a wonderful celebration!\")}}\r\n                    </span>\r\n                  </td>\r\n                </tr>\r\n              </table>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- bottom decoration -->\r\n          <tr>\r\n            <td align=\"center\" style=\"padding:26px 0 10px 0;\">\r\n              <table cellpadding=\"0\" cellspacing=\"0\">\r\n                <tr>\r\n                  <td style=\"font-size:32px; padding:0 10px;\">&#127873;</td>\r\n                  <td style=\"font-size:32px; padding:0 10px;\">&#127775;</td>\r\n                  <td style=\"font-size:32px; padding:0 10px;\">&#127873;</td>\r\n                </tr>\r\n              </table>\r\n            </td>\r\n          </tr>\r\n\r\n          <tr>\r\n            <td style=\"text-align:center; padding-bottom:12px;\">\r\n              <span style=\"display:inline-block; width:100px; height:1px; background:linear-gradient(90deg,transparent,#3a3450,transparent);\"></span>\r\n            </td>\r\n          </tr>\r\n\r\n          <!-- footer -->\r\n          <tr>\r\n            <td align=\"center\" style=\"padding:6px 20px 28px 20px;\">\r\n              <span style=\"font-family:Arial, sans-serif; font-size:11px; color:#75708f;\">\r\n                Sent automatically by the HR &amp; Admin Team &middot; Omni Payments\r\n              </span>\r\n            </td>\r\n          </tr>\r\n        </table>\r\n      </td>\r\n    </tr>\r\n  </table>\r\n</body>\r\n</html>",
+                "subject": "🎉 Happy Birthday, {{14.`0`}}!",
+                "attachments": [
+                    {
+                        "cid": "employee_photo",
+                        "data": "{{5.data}}",
+                        "fileName": "{{5.name}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "cc": {
+                            "mode": "chose"
+                        },
+                        "to": {
+                            "mode": "edit"
+                        },
+                        "bcc": {
+                            "mode": "chose"
+                        },
+                        "attachments": {
+                            "mode": "chose",
+                            "items": [
+                                null
+                            ]
+                        }
+                    },
+                    "parameters": {
+                        "account": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "My Google connection (vishalrathod0002@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "account",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "from",
+                        "type": "text",
+                        "label": "From"
+                    },
+                    {
+                        "name": "to",
+                        "spec": {
+                            "name": "value",
+                            "type": "email",
+                            "label": "Email address",
+                            "required": true
+                        },
+                        "type": "array",
+                        "label": "To",
+                        "required": true
+                    },
+                    {
+                        "name": "subject",
+                        "type": "text",
+                        "label": "Subject"
+                    },
+                    {
+                        "name": "html",
+                        "type": "text",
+                        "label": "Content"
+                    },
+                    {
+                        "name": "attachments",
+                        "spec": [
+                            {
+                                "name": "fileName",
+                                "type": "filename",
+                                "label": "File name",
+                                "required": true,
+                                "semantic": "file:name"
+                            },
+                            {
+                                "name": "data",
+                                "type": "buffer",
+                                "label": "Data",
+                                "required": true,
+                                "semantic": "file:data"
+                            },
+                            {
+                                "name": "cid",
+                                "type": "text",
+                                "label": "Content-ID"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Attachments"
+                    },
+                    {
+                        "name": "cc",
+                        "spec": {
+                            "name": "value",
+                            "type": "email",
+                            "label": "Email address"
+                        },
+                        "type": "array",
+                        "label": "Copy recipient"
+                    },
+                    {
+                        "name": "bcc",
+                        "spec": {
+                            "name": "value",
+                            "type": "email",
+                            "label": "Email address"
+                        },
+                        "type": "array",
+                        "label": "Blind copy recipient"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 21,
+            "module": "google-sheets:updateRow",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": 8883919
+            },
+            "mapper": {
+                "from": "drive",
+                "mode": "select",
+                "values": {
+                    "0": "{{14.`0`}}",
+                    "1": "{{14.`1`}}",
+                    "2": "{{14.`2`}}",
+                    "3": "{{14.`3`}}",
+                    "4": "{{14.`4`}}",
+                    "5": "{{formatDate(now; \"YYYY\")}}",
+                    "6": "Wished"
+                },
+                "sheetId": "Sheet1",
+                "rowNumber": "{{14.`__ROW_NUMBER__`}}",
+                "spreadsheetId": "/1NLbTyE3YXzAAUzpej-eeBzji0Nxvg-e4/1JWpg28FxfiwszUV3D0M0LYJc51mwY06mhvPdeqKFBAE",
+                "includesHeaders": true,
+                "useColumnHeaders": false,
+                "valueInputOption": "USER_ENTERED"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1200,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "from": {
+                            "label": "My Drive"
+                        },
+                        "mode": {
+                            "label": "Search by path"
+                        },
+                        "sheetId": {
+                            "label": "Sheet1"
+                        },
+                        "spreadsheetId": {
+                            "path": [
+                                "Make",
+                                "employee_birthday_sheet"
+                            ]
+                        },
+                        "includesHeaders": {
+                            "label": "Yes"
+                        },
+                        "useColumnHeaders": {
+                            "label": "No"
+                        },
+                        "valueInputOption": {
+                            "mode": "chose",
+                            "label": "User entered"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "My Google connection (vishalrathod0002@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "mode",
+                        "type": "select",
+                        "label": "Search Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "select",
+                                "fromAll",
+                                "map"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "valueInputOption",
+                        "type": "select",
+                        "label": "Value input option",
+                        "validate": {
+                            "enum": [
+                                "USER_ENTERED",
+                                "RAW"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "type": "select",
+                        "label": "Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "spreadsheetId",
+                        "type": "file",
+                        "label": "Spreadsheet Name",
+                        "required": true
+                    },
+                    {
+                        "name": "sheetId",
+                        "type": "select",
+                        "label": "Sheet Name",
+                        "required": true
+                    },
+                    {
+                        "name": "rowNumber",
+                        "type": "uinteger",
+                        "label": "Row number",
+                        "required": true
+                    },
+                    {
+                        "name": "includesHeaders",
+                        "type": "select",
+                        "label": "Table contains headers",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                true,
+                                false
+                            ]
+                        }
+                    },
+                    {
+                        "name": "useColumnHeaders",
+                        "type": "select",
+                        "label": "Use column headers as IDs of the columns",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                true,
+                                false
+                            ]
+                        }
+                    },
+                    {
+                        "name": "values",
+                        "spec": [
+                            {
+                                "name": "0",
+                                "type": "text",
+                                "label": "EmployeeName (A)"
+                            },
+                            {
+                                "name": "1",
+                                "type": "text",
+                                "label": "Email (B)"
+                            },
+                            {
+                                "name": "2",
+                                "type": "text",
+                                "label": "DOB (C)"
+                            },
+                            {
+                                "name": "3",
+                                "type": "text",
+                                "label": "Department (D)"
+                            },
+                            {
+                                "name": "4",
+                                "type": "text",
+                                "label": "PhotoDriveFileId (E)"
+                            },
+                            {
+                                "name": "5",
+                                "type": "text",
+                                "label": "LastWishedYear (F)"
+                            },
+                            {
+                                "name": "6",
+                                "type": "text",
+                                "label": "Status (G)"
+                            },
+                            {
+                                "name": "7",
+                                "type": "text",
+                                "label": "(H)"
+                            },
+                            {
+                                "name": "8",
+                                "type": "text",
+                                "label": "(I)"
+                            },
+                            {
+                                "name": "9",
+                                "type": "text",
+                                "label": "(J)"
+                            },
+                            {
+                                "name": "10",
+                                "type": "text",
+                                "label": "(K)"
+                            },
+                            {
+                                "name": "11",
+                                "type": "text",
+                                "label": "(L)"
+                            },
+                            {
+                                "name": "12",
+                                "type": "text",
+                                "label": "(M)"
+                            },
+                            {
+                                "name": "13",
+                                "type": "text",
+                                "label": "(N)"
+                            },
+                            {
+                                "name": "14",
+                                "type": "text",
+                                "label": "(O)"
+                            },
+                            {
+                                "name": "15",
+                                "type": "text",
+                                "label": "(P)"
+                            },
+                            {
+                                "name": "16",
+                                "type": "text",
+                                "label": "(Q)"
+                            },
+                            {
+                                "name": "17",
+                                "type": "text",
+                                "label": "(R)"
+                            },
+                            {
+                                "name": "18",
+                                "type": "text",
+                                "label": "(S)"
+                            },
+                            {
+                                "name": "19",
+                                "type": "text",
+                                "label": "(T)"
+                            },
+                            {
+                                "name": "20",
+                                "type": "text",
+                                "label": "(U)"
+                            },
+                            {
+                                "name": "21",
+                                "type": "text",
+                                "label": "(V)"
+                            },
+                            {
+                                "name": "22",
+                                "type": "text",
+                                "label": "(W)"
+                            },
+                            {
+                                "name": "23",
+                                "type": "text",
+                                "label": "(X)"
+                            },
+                            {
+                                "name": "24",
+                                "type": "text",
+                                "label": "(Y)"
+                            },
+                            {
+                                "name": "25",
+                                "type": "text",
+                                "label": "(Z)"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Values in columns",
+                        "metadata": [
+                            [
+                                [
+                                    "EmployeeName",
+                                    "Email",
+                                    "DOB",
+                                    "Department",
+                                    "PhotoDriveFileId",
+                                    "LastWishedYear",
+                                    "Status"
+                                ]
+                            ]
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}
